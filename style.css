@@ -1,0 +1,48 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    margin: 0;
+    padding: 0;
+   
+  }
+
+
+header{
+  background-image: url('../imgs/background2.png');
+    background-size: cover;
+    height: 650px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+header button {
+  font-size: 10px;
+  background-color: #ffb731;
+  color: #fff;
+  padding: 20px 40px;
+  border: 0;
+  box-shadow: 0;
+  border-radius: 5px;
+  margin-bottom: 50px;
+  margin-right: 210px;
+}
+
+
+
+.tela-jogo{
+  display: flex;
+}
+
+canvas {
+  background-image: url('../imgs/telaJogo.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  
+}
+
+#game-board {
+  position: center;
+  border-radius: 10px solid black;
+}
+
+    
