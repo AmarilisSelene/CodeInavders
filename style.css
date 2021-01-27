@@ -33,16 +33,31 @@ header button {
   display: flex;
 }
 
-canvas {
+/* canvas {
+  background-image: url('../imgs/telaJogo.png');
+  background-position: right;
+  background-repeat: no-repeat;
+  
+} */
+
+/* #canvas {
+  background-color:rgb(253, 222, 81);
+  border: 10px solid rgb(51, 31, 1);
+  border-radius: 20px;
+ } */
+
+#canvas {
   background-image: url('../imgs/telaJogo.png');
   background-position: right;
   background-repeat: no-repeat;
   
 }
 
+
 #game-board {
-  position: center;
-  border-radius: 10px solid black;
+  /* position: center;
+  border-radius: 10px solid black; */
+  float: left;
 }
 
     
