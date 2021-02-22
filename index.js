@@ -1,338 +1,254 @@
 window.onload = () => {
+  let canvas = document.getElementById('canvas');
+  let context = canvas.getContext("2d");
+  let id = null;
+  let start = false;
 
-  document.getElementById("start-button").onclick = () => {
-    startGame();
-  };
+  class Player {
+    constructor(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+      this.speedX = 0;
+      this.direction = 'l';
+      this.playerImg = new Image();
+      this.playerImg.src = './images/player.png';
+      this.playerImgDir = new Image();
+      this.playerImgDir.src = './images/player_dir.png';
+    }
 
-  function startGame() { }
-};
+    createPlayer() {
+      if (this.direction === 'l') {
+        context.drawImage(this.playerImg, this.x, this.y, this.width, this.height);
+      } else {
+        context.drawImage(this.playerImgDir, this.x, this.y, this.width, this.height);
+      }
+    }
 
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
-var frames = 0;
-let interval = setInterval(updateGameArea, 5);
+    newPos() {
+      if (this.x >= 0 && this.x <= canvas.width - this.width) {
+        this.x += this.speedX;
+      } else if (this.x < 0) {
+        this.x = 1;
+      } else if (this.x >= canvas.width - this.width) {
+        this.x = canvas.width - 50;
+      }
+    }
+
+    left() {
+      return this.x;
+    }
+    right() {
+      return this.x + this.width;
+    }
+    top() {
+      return this.y + 10;
+    }
+
+    crashWith(obstacle) {
+      return (
+        this.top() === obstacle.bottom() &&
+        this.right() >= obstacle.left() &&
+        this.left() <= obstacle.right()
+      )
+    }
+  }
+
+  class Obstacle {
+    constructor(x) {
+      this.x = x;
+      this.y = 0;
+      this.width = 30;
+      this.height = 30;
+    }
+
+    createObstacle() {
+      this.bludgerImg = new Image();
+      this.bludgerImg.src = './images/bug.png';
+      context.drawImage(this.bludgerImg, this.x, this.y, this.width, this.height);
+    }
+
+    createInsecticide() {
+      this.insecticideImg = new Image();
+      this.insecticideImg.src = './images/insecticide.png';
+      context.drawImage(this.snitchImg, this.x, this.y, this.width + 15, this.height + 15);
+    }
+
+    moveObstacle() {
+      this.y += 5;
+    }
+
+    left() {
+      return this.x;
+    }
+    right() {
+      return this.x + this.width;
+    }
+    top() {
+      return this.y;
+    }
+    bottom() {
+      return this.y + this.height;
+    }
+  }
+
+  let player = new Player(canvas.width / 2, canvas.height - 70, 50, 50);
+  let frames = 0;
+  let bludgers = [];
+  let lifes = 1;
+  let snitch = [];
 
 
+  // Criando novos obstaculos + guardando no array + movendo
+  function createObstaclesFunction() {
+    frames += 1;
+    if (lifes < 15) {
+      if (frames % 50 === 0) {
+        bludgers.push(new Obstacle(Math.floor(Math.random() * (canvas.width - 25))));
+      }
+    } else if (lifes >= 15) {
+      if (frames % 35 === 0) {
+        bludgers.push(new Obstacle(Math.floor(Math.random() * (canvas.width - 25))));
+      }
+    }
+    if (frames % 150 === 0) {
+      setTimeout(function () {
+        snitch.push(new Obstacle(Math.floor(Math.random() * (canvas.width - 25))))
+      }, 2000)
+    }
+  }
 
-//player
-player = new Image();
-player.src = "../imgs/player.png";
-let playerX = 380;
-let playerY = 519;
-player.onload = function () {
-  ctx.drawImage(player, playerX, playerY, 78, 120);
-};
+  function moveObstaclesFunction() {
+    bludgers.forEach((elem, index) => {
+      elem.createObstacle();
+      elem.moveObstacle();
+      if (elem.y >= canvas.height) {
+        bludgers.splice(index, 1);
+      }
+    })
+    snitch.forEach((elem, index) => {
+      elem.createInsecticide();
+      elem.moveObstacle();
+      if (elem.y >= canvas.height) {
+        snitch.splice(index, 1);
+      }
+    })
+  }
 
-function clear() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  function checkCrash() {
+    let crashed = bludgers.some(function (bludger) {
+      return player.crashWith(bludger);
+    });
+
+    if (crashed) {
+      if (lifes > 0) {
+        bludgers.forEach((element, index) => {
+          bludgers.splice(index, 1);
+          lifes -= 1;
+        })
+
+        // GAME OVER
+      } else {
+        hpsong.pause();
+        lostSound.play();
+        cancelAnimationFrame(id);
+        bludgers.forEach((element, index) => {
+          bludgers.splice(index, 1);
+        })
+        context.font = '25px serif';
+        context.fillStyle = 'black';
+        context.fillText("YOU'VE LOST", 6, canvas.height / 2);
+      }
+    }
+  }
+
+  function checkCatch() {
+    let catched = snitch.some(function (snitch) {
+      return player.crashWith(snitch);
+    });
+
+    if (catched) {
+      if (lifes >= 0) {
+        snitch.forEach((element, index) => {
+          snitch.splice(index, 1);
+          lifes += 2;
+        })
+      }
+      if (lifes >= 25) {
+        hpsong.pause();
+        winSound.play();
+        lifes = 25;
+        cancelAnimationFrame(id);
+        context.font = '25px serif';
+        context.fillStyle = 'black';
+        context.fillText('YOU WIN!', canvas.width / 3, canvas.height / 2);
+      }
+    }
+  }
+
+  function lifeScore(points) {
+    context.beginPath();
+    context.fillStyle = 'rgb(151, 76, 64)';
+    context.rect(220, 0, 80, 25);
+    context.fill();
+    context.font = "18px serif";
+    context.fillStyle = "rgb(242,222,13)";
+    context.fillText("Score: " + points, 225, 17);
+  }
+
+
+  // MOTOR
+  function gameUpdate() {
+
+    // "CLEAR" (BG)
+    context.clearRect(0, 0, 600, 700);
+
+    // PRINT O PLAYER
+    player.createPlayer();
+    player.newPos();
+
+    // PRINT OBSTACULOS 
+    createObstaclesFunction();
+    moveObstaclesFunction();
+
+    // ANIMATION START
+    id = requestAnimationFrame(gameUpdate);
+
+    // WIN
+    checkCatch();
+    // CRASH
+    checkCrash();
+    // PRINT SCORE
+    lifeScore(lifes);
+  }
+
+
+  document.onkeydown = function (e) {
+    switch (e.keyCode) {
+      case 37: // left arrow
+        player.speedX = -4;
+        player.direction = 'l'
+        break;
+      case 39: // right arrow
+        player.speedX = 4;
+        player.direction = 'r'
+        break;
+      case 13: // enter
+        if (!start) {
+          gameUpdate();
+          hpsong.play();
+          start = true;
+        } else {
+          window.location.reload()
+        }
+    }
+  }
+
+  document.onkeyup = function (e) {
+    player.speedX = 0;
+    player.speedY = 0;
+  }
 }
-
-//movimentaçao
-document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "ArrowLeft":
-      playerX -= 20;
-      console.log(playerX);
-      break;
-    case "ArrowRight":
-      playerX += 20;
-      console.log(playerX);
-      break;
-  }
-});
-
-function carUpdate() {
-  car = new Image();
-  car.src = "../images/car.png";
-  car.onload = function () {
-    ctx.drawImage(car, carX, carY, 50, 90);
-  };
-}
-
-//obstaculos
-class Component {
-  constructor(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.color = color;
-    this.x = x;
-    this.y = y;
-  }
-
-  update() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-  }
-
-  left() {
-    return this.x;
-  }
-  right() {
-    return this.x + this.width;
-  }
-  top() {
-    return this.y;
-  }
-  bottom() {
-    return this.y + this.height;
-  }
-
-  crashWith(obstacle) {
-    return !(
-      this.bottom() < obstacle.top() ||
-      this.top() > obstacle.bottom() ||
-      this.right() < obstacle.left() ||
-      this.left() > obstacle.right()
-    );
-  }
-}
-
-var myObstacles = [];
-function updateObstacles() {
-  for (i = 0; i < myObstacles.length; i++) {
-    myObstacles[i].y += 1;
-    myObstacles[i].update();
-  }
-
-  frames += 1;
-  if (frames % 200 === 0) {
-    let minWidth = 20;
-    let maxWidth = 50;
-    let width = Math.floor(
-      Math.random() * (maxWidth - minWidth + 1) + minWidth
-    );
-    let randomX = Math.floor(Math.random() * 300) + 50;
-
-    myObstacles.push(new Component(width, 30, "yellow", randomX, 0));
-
-  }
-}
-
-//
-function stop() {
-  clearInterval(interval);
-}
-
-function checkGameOver() {
-  const crashed = myObstacles.some(function (obstacle) {
-    return player.crashWith(obstacle);
-  });
-
-  if (crashed) {
-    stop();
-  }
-}
-
-// jogo
-function updateGameArea() {
-  clear();
-  carUpdate();
-  updateObstacles();
-  checkGameOver();
-  score();
-}
-
-// jogo
-function updateGameArea() {
-  clear();
-  carUpdate();
-  updateObstacles();
-  score();
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const gameBoard = document.getElementById('game-board');
-// const canvas = document.getElementById('canvas');
-// const ctx = canvas.getContext('2d');
-
-// class Game {
-//   constructor(background, player) {
-//     this.background = background;
-//     this.player = player;
-//   }
-
-//   updateGame = () => {
-//     this.clear();
-//     this.background.draw();
-
-//     this.player.move();
-//     this.player.drawImage();
-
-//   }
-
-//   clear = () => {
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   }
-
-//   startGame = () => {
-//     set.Interval(this.updateGame, 20);
-//   }
-
-// }
-// class Component {
-//   constructor(x, y, width, height, speed) {
-//     this.x = x;
-//     this.y = y;
-//     this.width = width;
-//     this.height = height;
-//     this.speed = speed;
-//   }
-// }
-
-// class Player extends Component {
-//   constructor(x, y, width, height, speed) {
-//     super(x, y, width, height, speed);
-//     img = new Image();
-//     this.img.src = '../imgs/player.png';
-
-
-//   }
-//   player = new Image();
-//   player.src = "../imgs/player.png";
-// let playerX = 380;
-// let playerY = 519;
-// player.onload = function () {
-//   ctx.drawImage(player, playerX, playerY, 78, 120);
-
-
-// };
-// move() {
-
-// }
-// draw() {
-//   ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-// }
-// }
-
-// class Background {
-//   constructor(x, y, width, height) {
-//     this.x = x;
-//     this.y = y;
-//     this.width = width;
-//     this.height = height;
-//     this.img = new Image().src = '../imgs/telaJogo.png';
-
-
-//   }
-//   draw() {
-//     this.img.onload = () => {
-//       ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-//     };
-//   }
-
-// }
-
-
-
-
-
-
-// var canvas = document.getElementById("canvas");
-// var ctx = canvas.getContext("2d");
-// var frames = 0;
-
-
-// const playerImg = new Image();
-// playerImg.src = "./imgs/player.png";
-
-// const bugImg = new Image();
-// bugImg.src = "./imgs/bug.png";
-
-
-// window.onload = () => {
-
-//   document.getElementById("start-button").onclick = () => {
-//     startGame();
-//   };
-
-//   function startGame() {
-//     gameBoard.style.display = "block";
-
-//     const game = new Game(new Background(0, 0, canvas.width, canvas.height), new
-//       Player(canvas.width / 2, canvas.height - 319, 158, 319));
-//     game.startGame();
-//   }
-// };
-
-// var canvas = document.getElementById("canvas");
-// var ctx = canvas.getContext("2d");
-// var frames = 0;
-
-
-// //pontuação
-// function score() {
-//   const points = Math.floor(this.frames / 100);
-//   ctx.font = "32px Serif";
-//   ctx.fillStyle = "white";
-//   ctx.fillText(`Score: ${points}`, 80, 50);
-// }
-
-// player
-// player = new Image();
-// player.src = "../imgs/player.png";
-// let playerX = 380;
-// let playerY = 519;
-// player.onload = function () {
-//   ctx.drawImage(player, playerX, playerY, 78, 120);
-// };
-
-
-
-// function clear() {
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-// }
-
-// //movimentaçao
-// document.addEventListener("keydown", (e) => {
-//   switch (e.key) {
-//     case "ArrowLeft":
-//       playerX -= 20;
-//       console.log(playerX);
-//       break;
-//     case "ArrowRight":
-//       playerX += 20;
-//       console.log(playerX);
-//       break;
-//   }
-// });
-
-// function playerUpdate() {
-//   player = new Image();
-//   player.src = "../imgs/player.png";
-//   player.onload = function () {
-//     ctx.drawImage(player, playerX, playerY, 78, 120);
-//   };
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

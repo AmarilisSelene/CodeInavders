@@ -7,7 +7,7 @@ body {
 
 
 header{
-  background-image: url('../imgs/background2.png');
+  background-image: url('./images/background2.png');
     background-size: cover;
     height: 650px;
     display: flex;
@@ -15,7 +15,7 @@ header{
     align-items: center;
 }
   
-header button {
+/* header button {
   font-size: 10px;
   background-color: #ffb731;
   color: #fff;
@@ -25,39 +25,25 @@ header button {
   border-radius: 5px;
   margin-bottom: 50px;
   margin-right: 210px;
-}
-
-
-
-.tela-jogo{
-  display: flex;
-}
-
-/* canvas {
-  background-image: url('../imgs/telaJogo.png');
-  background-position: right;
-  background-repeat: no-repeat;
-  
 } */
 
-/* #canvas {
-  background-color:rgb(253, 222, 81);
-  border: 10px solid rgb(51, 31, 1);
-  border-radius: 20px;
- } */
+
+
 
 #canvas {
-  background-image: url('../imgs/telaJogo.png');
+  background-image: url('../images/telaJogo.png');
   background-position: right;
   background-repeat: no-repeat;
+  background-color:rgb(105, 105, 104);
+  border: 10px solid rgb(97, 96, 95);
+  border-radius: 20px;
   
 }
 
 
 #game-board {
-  /* position: center;
-  border-radius: 10px solid black; */
-  float: left;
+    float: left;
+  
 }
 
     
