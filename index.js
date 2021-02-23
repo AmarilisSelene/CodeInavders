@@ -64,15 +64,15 @@ window.onload = () => {
     }
 
     createObstacle() {
-      this.bludgerImg = new Image();
-      this.bludgerImg.src = './images/bug.png';
-      context.drawImage(this.bludgerImg, this.x, this.y, this.width, this.height);
+      this.bugImg = new Image();
+      this.bugImg.src = './images/bug.png';
+      context.drawImage(this.bugImg, this.x, this.y, this.width, this.height);
     }
 
     createInsecticide() {
       this.insecticideImg = new Image();
       this.insecticideImg.src = './images/insecticide.png';
-      context.drawImage(this.snitchImg, this.x, this.y, this.width + 15, this.height + 15);
+      context.drawImage(this.insecticideImg, this.x, this.y, this.width + 15, this.height + 15);
     }
 
     moveObstacle() {
