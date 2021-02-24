@@ -93,7 +93,7 @@ window.onload = () => {
     }
   }
 
-  let player = new Player(canvas.width / 2, canvas.height - 70, 50, 50);
+  let player = new Player(canvas.width / 2, canvas.height - 50, 50, 50);
   let frames = 0;
   let bludgers = [];
   let lifes = 1;
@@ -150,13 +150,11 @@ window.onload = () => {
 
         // GAME OVER
       } else {
-        hpsong.pause();
-        lostSound.play();
         cancelAnimationFrame(id);
         bludgers.forEach((element, index) => {
           bludgers.splice(index, 1);
         })
-        context.font = '25px serif';
+        context.font = '40px serif';
         context.fillStyle = 'black';
         context.fillText("YOU'VE LOST", 6, canvas.height / 2);
       }
@@ -176,11 +174,9 @@ window.onload = () => {
         })
       }
       if (lifes >= 25) {
-        hpsong.pause();
-        winSound.play();
         lifes = 25;
         cancelAnimationFrame(id);
-        context.font = '25px serif';
+        context.font = '45px serif';
         context.fillStyle = 'black';
         context.fillText('YOU WIN!', canvas.width / 3, canvas.height / 2);
       }
