@@ -1,3 +1,25 @@
+.texto{
+  color: rgb(0, 0, 0);
+  float: left;
+  text-align: center;
+  padding-right: 195px;
+  font-size:20px;
+  
+}
+
+.instrução{
+  color: brown;
+  float: right;
+    background-color:rgb(20, 19, 19);
+  /* border: 2px solid rgb(247, 188, 62); 
+  border-radius: 2px;  */
+  text-align: center;
+margin-left: 70px;
+  
+}
+
+
+
 body {
     font-family: "Open Sans", sans-serif;
     margin: 0;

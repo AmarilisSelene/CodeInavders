@@ -154,9 +154,9 @@ window.onload = () => {
         bludgers.forEach((element, index) => {
           bludgers.splice(index, 1);
         })
-        context.font = '40px serif';
+        context.font = '30px serif';
         context.fillStyle = 'black';
-        context.fillText("YOU'VE LOST", 6, canvas.height / 2);
+        context.fillText("PRESS ENTER TO TRY AGAIN", 6, canvas.height / 2);
       }
     }
   }
@@ -173,8 +173,8 @@ window.onload = () => {
           lifes += 2;
         })
       }
-      if (lifes >= 25) {
-        lifes = 25;
+      if (lifes >= 10) {
+        lifes = 10;
         cancelAnimationFrame(id);
         context.font = '45px serif';
         context.fillStyle = 'black';
