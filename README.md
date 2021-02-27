@@ -2,7 +2,7 @@
 
 <h1>CODE INVADERS</h1>
 <img src="/images/logo_code_invaders.png">
-<a href="http://127.0.0.1:5500/index.html" target="_blank">CLICK HERE TO PLAY.</a>
+<a href="https://amarilisselene.github.io/CodeInvaders/" target="_blank">CLICK HERE TO PLAY.</a>
 <br>
 <h2>ABOUT THE GAME</h2>
 <p>Code Invaders is a simple 2D game built in HTML, CSS, canvas and JavaScript, where you have to make Grace Hooper dodge all the bugs.</br>Grace Murray Hopper was a pioneer of computer programming and while she was working on a Mark II Computer at Harvard University in 1947, her associates discovered a moth that was stuck in a relay.
